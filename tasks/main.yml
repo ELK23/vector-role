@@ -1,0 +1,26 @@
+---
+- name: Download Vector
+  ansible.builtin.get_url:
+    url: "https://packages.timber.io/vector/{{ vector_version }}/vector-{{ vector_version }}-x86_64-unknown-linux-gnu.tar.gz"
+    dest: "/tmp/vector-{{ vector_version }}.tar.gz"
+    mode: '0644'
+
+- name: Create installation directory
+  ansible.builtin.file:
+    path: "{{ install_dir }}"
+    state: directory
+    mode: '0755'
+
+- name: Extract Vector archive
+  ansible.builtin.unarchive:
+    src: "/tmp/vector-{{ vector_version }}.tar.gz"
+    dest: "{{ install_dir }}"
+    remote_src: true
+
+- name: Deploy Vector configuration
+  ansible.builtin.template:
+    src: "vector.toml.j2"
+    dest: "{{ install_dir }}/vector.toml"
+    mode: '0644'
+  notify: Restart Vector---
+# tasks file for vector-role
